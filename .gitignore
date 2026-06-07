@@ -1,0 +1,40 @@
+# === Keji Pharmacy CEO API — .gitignore ===
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+.env.*
+!.env.template
+
+# Python virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyc
+
+# Distribution / build
+dist/
+build/
+*.egg-info/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+sync_worker.log

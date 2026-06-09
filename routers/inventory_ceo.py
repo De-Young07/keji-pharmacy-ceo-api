@@ -52,12 +52,16 @@ def get_expiry_alerts(
 ):
     rows = db.execute(text("""
         SELECT
-            b.id AS batch_id, b.batch_number, b.product_id,
-            p.brand_name, p.generic_name, p.strength,
+            b.id::text            AS batch_id,
+            b.batch_number,
+            b.product_id::text,
+            p.brand_name,
+            p.generic_name,
+            p.strength,
             b.expiry_date::text,
-            (b.expiry_date - CURRENT_DATE)::INTEGER AS days_until_expiry,
+            (b.expiry_date - CURRENT_DATE)::INTEGER  AS days_until_expiry,
             b.quantity_remaining,
-            (b.selling_price * b.quantity_remaining) AS value_at_risk,
+            (b.selling_price * b.quantity_remaining)  AS value_at_risk,
             b.selling_price
         FROM inventory_batches b
         JOIN products p ON p.id = b.product_id
@@ -76,7 +80,7 @@ def get_products(
 ):
     rows = db.execute(text("""
         SELECT
-            product_id, brand_name, generic_name, strength, form,
+            product_id::text, brand_name, generic_name, strength, form,
             category, total_stock, stock_status,
             active_batch_id::text, active_batch_number,
             current_selling_price, current_cost_price,

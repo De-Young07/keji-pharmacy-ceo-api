@@ -10,6 +10,7 @@ from sqlalchemy import text
 from database import get_db
 from auth_utils import require_ceo
 import models
+from uuid import UUID
 
 router = APIRouter()
 
@@ -32,7 +33,7 @@ class DailySummary(BaseModel):
     total_outstanding:  Decimal
 
 class DebtorSummary(BaseModel):
-    customer_id:         str
+    customer_id:         UUID
     full_name:           str
     phone:               Optional[str]
     current_balance:     Decimal
@@ -45,7 +46,7 @@ class CategoryRevenue(BaseModel):
     units_sold:    int
 
 class StaffPerformance(BaseModel):
-    user_id:            str
+    user_id:            UUID
     full_name:          str
     role:               str
     total_sales:        Decimal

@@ -25,9 +25,19 @@ class ProductStockRow(BaseModel):
     active_batch_id: Optional[str]; active_batch_number: Optional[str]
     current_selling_price: Optional[Decimal]; current_cost_price: Optional[Decimal]
     earliest_expiry: Optional[str]
+    price_retail_general: Optional[Decimal] = None
+    price_retail_subsidized: Optional[Decimal] = None
+    price_wholesale_general: Optional[Decimal] = None
+    price_wholesale_subsidized: Optional[Decimal] = None
+    price_wholesale_bulk: Optional[Decimal] = None
 
 class PriceUpdateRequest(BaseModel):
-    new_selling_price: Decimal
+    new_selling_price:              Decimal
+    new_price_retail_general:       Optional[Decimal] = None
+    new_price_retail_subsidized:    Optional[Decimal] = None
+    new_price_wholesale_general:    Optional[Decimal] = None
+    new_price_wholesale_subsidized: Optional[Decimal] = None
+    new_price_wholesale_bulk:       Optional[Decimal] = None
     reason: Optional[str] = None
 
 class ReceiveBatchRequest(BaseModel):
@@ -82,7 +92,9 @@ def get_products(q: str = Query(default=""), db: Session = Depends(get_db), _: m
     rows = db.execute(text("""
         SELECT product_id::text, brand_name, generic_name, strength, form, category,
                total_stock, stock_status, active_batch_id::text, active_batch_number,
-               current_selling_price, current_cost_price, earliest_expiry::text
+               current_selling_price, current_cost_price, earliest_expiry::text,
+               price_retail_general, price_retail_subsidized,
+               price_wholesale_general, price_wholesale_subsidized, price_wholesale_bulk
         FROM product_stock_summary
         WHERE :q = '' OR brand_name ILIKE '%' || :q || '%' OR generic_name ILIKE '%' || :q || '%'
         ORDER BY brand_name ASC LIMIT 100
@@ -117,8 +129,22 @@ def update_price(batch_id: str, body: PriceUpdateRequest, db: Session = Depends(
         new_selling_price=body.new_selling_price, reason=body.reason, synced=False,
     ))
     batch.selling_price = body.new_selling_price
+    if body.new_price_retail_general       is not None: batch.price_retail_general       = body.new_price_retail_general
+    if body.new_price_retail_subsidized    is not None: batch.price_retail_subsidized    = body.new_price_retail_subsidized
+    if body.new_price_wholesale_general    is not None: batch.price_wholesale_general    = body.new_price_wholesale_general
+    if body.new_price_wholesale_subsidized is not None: batch.price_wholesale_subsidized = body.new_price_wholesale_subsidized
+    if body.new_price_wholesale_bulk       is not None: batch.price_wholesale_bulk       = body.new_price_wholesale_bulk
+    batch.synced = False
     db.commit()
-    return {"message": "Price updated. Syncing to store within 60s.", "new_price": float(body.new_selling_price)}
+    return {
+        "message": "Prices updated. Syncing to store within 60s.",
+        "new_price": float(body.new_selling_price),
+        "price_retail_general":       float(batch.price_retail_general)       if batch.price_retail_general       else None,
+        "price_retail_subsidized":    float(batch.price_retail_subsidized)    if batch.price_retail_subsidized    else None,
+        "price_wholesale_general":    float(batch.price_wholesale_general)    if batch.price_wholesale_general    else None,
+        "price_wholesale_subsidized": float(batch.price_wholesale_subsidized) if batch.price_wholesale_subsidized else None,
+        "price_wholesale_bulk":       float(batch.price_wholesale_bulk)       if batch.price_wholesale_bulk       else None,
+    }
 
 
 @router.post("/batches/receive")

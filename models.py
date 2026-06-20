@@ -27,6 +27,12 @@ class InventoryBatch(Base):
     quantity_remaining = Column(Integer)
     expiry_date        = Column(Date)
     is_active          = Column(Boolean, default=True)
+    # Price tiers — fixed prices set at stock receipt
+    price_retail_general       = Column(Numeric(12, 2))
+    price_retail_subsidized    = Column(Numeric(12, 2))
+    price_wholesale_general    = Column(Numeric(12, 2))
+    price_wholesale_subsidized = Column(Numeric(12, 2))
+    price_wholesale_bulk       = Column(Numeric(12, 2))
     synced             = Column(Boolean, default=False)
     synced_at          = Column(DateTime(timezone=True))
 

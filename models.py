@@ -17,7 +17,13 @@ class User(Base):
     created_at    = Column(DateTime(timezone=True), server_default=func.now())
     last_login_at = Column(DateTime(timezone=True))
 
+class Category(Base):
+    __tablename__ = "categories"
+    id   = Column(UUID(as_uuid=False), primary_key=True, default=new_uuid)
+    name = Column(String(100), nullable=False, unique=True)
+
 class Product(Base):
+
     __tablename__ = "products"
     id                     = Column(UUID(as_uuid=False), primary_key=True, default=new_uuid)
     brand_name             = Column(String(150), nullable=False)
@@ -25,7 +31,7 @@ class Product(Base):
     strength               = Column(String(50))
     form                   = Column(String(30))
     composition            = Column(Text)
-    category_id            = Column(UUID(as_uuid=False))
+    category_id            = Column(UUID(as_uuid=False), ForeignKey("categories.id"))
     unit_of_measure        = Column(String(20))
     requires_prescription  = Column(Boolean, default=False)
     min_stock_alert        = Column(Integer, default=10)

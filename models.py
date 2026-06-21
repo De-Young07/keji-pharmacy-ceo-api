@@ -17,6 +17,22 @@ class User(Base):
     created_at    = Column(DateTime(timezone=True), server_default=func.now())
     last_login_at = Column(DateTime(timezone=True))
 
+class Product(Base):
+    __tablename__ = "products"
+    id                     = Column(UUID(as_uuid=False), primary_key=True, default=new_uuid)
+    brand_name             = Column(String(150), nullable=False)
+    generic_name           = Column(String(150), nullable=False)
+    strength               = Column(String(50))
+    form                   = Column(String(30))
+    composition            = Column(Text)
+    category_id            = Column(UUID(as_uuid=False))
+    unit_of_measure        = Column(String(20))
+    requires_prescription  = Column(Boolean, default=False)
+    min_stock_alert        = Column(Integer, default=10)
+    nafdac_number          = Column(String(50))
+    is_active              = Column(Boolean, default=True)
+    created_at             = Column(DateTime(timezone=True), server_default=func.now())
+
 class InventoryBatch(Base):
     __tablename__ = "inventory_batches"
     id                 = Column(UUID(as_uuid=False), primary_key=True, default=new_uuid)

@@ -71,7 +71,7 @@ class ProfitSummary(BaseModel):
 
 
 @router.get("/expiry-alerts", response_model=List[ExpiryAlert])
-def get_expiry_alerts(days: int = Query(default=90), db: Session = Depends(get_db), _: models.User = Depends(require_ceo)):
+def get_expiry_alerts(days: int = Query(default=180), db: Session = Depends(get_db), _: models.User = Depends(require_ceo)):
     rows = db.execute(text("""
         SELECT b.id::text AS batch_id, b.batch_number, b.product_id::text,
                p.brand_name, p.generic_name, p.strength, b.expiry_date::text,
